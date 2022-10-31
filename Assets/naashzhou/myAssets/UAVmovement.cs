@@ -5,13 +5,13 @@ using UnityEngine;
 public class UAVmovement : MonoBehaviour
 {
 
-    public bool activate;
+    public bool activate = false;
 
     public float speed = 1.0f;
 
     public float angleSpeed = 0.01f;
     public Transform target;
-    public bool isRotate = true;
+    public bool isRotate = false;
     public Transform child;
     // Start is called before the first frame update
     void Start()
@@ -45,6 +45,13 @@ public class UAVmovement : MonoBehaviour
             }
         }
         
+    }
+
+
+    public void activateaction(string k){
+        print(k+"I am received~");
+        activate = true;
+        isRotate = true;
     }
 }
 
