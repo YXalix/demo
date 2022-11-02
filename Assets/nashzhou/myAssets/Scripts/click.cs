@@ -6,7 +6,6 @@ public class click : MonoBehaviour
 {
 
     public GameObject[] targets;
-    public GameObject respawnPrefab;
     public GameObject[] respawns;
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
