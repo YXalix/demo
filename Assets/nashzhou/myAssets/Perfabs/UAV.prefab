@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 455667933483930152}
-  - component: {fileID: 455667933483930155}
+  - component: {fileID: 8462447747196777217}
   m_Layer: 0
   m_Name: UAV
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &455667933483930155
+--- !u!114 &8462447747196777217
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,7 +42,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 455667933483930154}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20144efb310aa4977998d694f8bd37b8, type: 3}
+  m_Script: {fileID: 11500000, guid: 44a7764c8d2884b549769c60d2851ae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   activate: 0
@@ -50,7 +50,7 @@ MonoBehaviour:
   angleSpeed: 0.01
   target: {fileID: 0}
   isRotate: 0
-  child: {fileID: 7585706656763336302}
+  child: {fileID: 0}
 --- !u!1001 &455667932582389778
 PrefabInstance:
   m_ObjectHideFlags: 0
