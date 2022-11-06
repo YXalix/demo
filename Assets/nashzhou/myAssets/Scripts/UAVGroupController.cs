@@ -16,8 +16,8 @@ public class UAVGroupController : MonoBehaviour
 
     public Transform[] spawns;
     public float angleSpeed = 0.01f;
-    float speed = 0.1f;
-    float updownspeed = 0.2f;
+    float speed = 1f;
+    float updownspeed = 0.5f;
 
     float angle;
 
