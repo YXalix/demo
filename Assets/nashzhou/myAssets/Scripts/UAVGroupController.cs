@@ -6,20 +6,24 @@ using UnityEngine.Events;
 public class UAVGroupController : MonoBehaviour
 {
 
+    public int groupID;
+
+    public float height;
     public UnityEvent m_MyEvent;
     public UnityEvent m_MyEvent2;
     public Vector3 targetPosition;
+    public Transform targetTransform;
 
     public int InitUAVNum;
 
     public GameObject UAVPerfab;
 
-    public Transform[] spawns;
-    public float angleSpeed = 0.01f;
-    float speed = 1f;
-    float updownspeed = 0.5f;
+    private Transform[] spawns;
+    private float angleSpeed = 0.005f;
+    private float speed = 0.5f;
+    private float updownspeed = 0.5f;
 
-    float angle;
+    private float angle;
 
     public bool readyup = false;
 
@@ -29,10 +33,10 @@ public class UAVGroupController : MonoBehaviour
 
     public bool readydown = false;
 
+    public bool readyrotateequal = false;
+
     Animator m_Animator;
 
-
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -40,7 +44,8 @@ public class UAVGroupController : MonoBehaviour
             m_MyEvent = new UnityEvent();
         if (m_MyEvent2 == null)
             m_MyEvent2 = new UnityEvent();
-        targetPosition = GameObject.Find("UAVStarget").transform.position;
+        targetTransform = GameObject.Find("UAVStarget"+groupID).transform;
+        targetPosition  = targetTransform.position;
         var temp = transform.GetComponentInChildren<Transform>();
         var temp1 = temp.GetComponentInChildren<Transform>();
         
@@ -66,10 +71,13 @@ public class UAVGroupController : MonoBehaviour
             myflyup();
         }
         if(readyrotate){
-            myrotateToall();
+            myrotateTo(transform);
         }
         if(readyfly){
             myflyto();
+        }
+        if(readyrotateequal){
+            myrotateequal();
         }
         if(readydown){
             myflydown();
@@ -78,7 +86,7 @@ public class UAVGroupController : MonoBehaviour
 
     public void myflyup(){
         var target = Vector3.zero ;
-        target.y = targetPosition.y + 30f - transform.position.y;
+        target.y = height - transform.position.y;
         var step = target * Time.deltaTime;
         print(step);
         // check end node condition
@@ -102,7 +110,7 @@ public class UAVGroupController : MonoBehaviour
 
         item.localRotation = Quaternion.Slerp(item.localRotation, rotate, angleSpeed);
         print(Vector3.Angle(vec, item.forward));
-        //if (Vector3.Angle(vec, item.forward) < 0.01f). // need to been checked
+        if (Vector3.Angle(vec, item.forward) < 1f) // need to been checked
         {
             readyrotate = false;
             readyfly = true;
@@ -116,6 +124,17 @@ public class UAVGroupController : MonoBehaviour
         print(dis.magnitude);
         if(dis.magnitude < 0.001f){
             readyfly = false;
+            readyrotateequal = true;
+        }
+    }
+    public void myrotateequal(){
+        Vector3 vec = targetTransform.forward;
+        vec.y = 0;
+        Quaternion rotate = Quaternion.LookRotation(vec);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, rotate, angleSpeed);
+        if (Vector3.Angle(vec, transform.forward) < 1f) // need to been checked
+        {
+            readyrotateequal = false;
             readydown = true;
         }
     }
@@ -125,18 +144,19 @@ public class UAVGroupController : MonoBehaviour
         // check end node condition
         if(Mathf.Abs(target.y) < 0.2f){
             readydown = false;
+            m_MyEvent2.Invoke();
         }
         transform.position =  (transform.position + target * Time.deltaTime * updownspeed);
     }
 
 
     public void generator(){
-        InitUAVNum = 120;
+        InitUAVNum = 64;
         //spawns = new Transform[InitUAVNum];
         var count = 0;
         int sum = (int)Mathf.Sqrt(InitUAVNum);
-        for(int i = 0;i<sum;i++){
-            for(int j = 0;j<sum;j++){
+        for(int i = 0;i<=sum;i++){
+            for(int j = 0;j<=sum;j++){
                 if(count < InitUAVNum){
                     var templocation = transform.position;
                     templocation.x += (i-sum/2)*5;
@@ -147,4 +167,5 @@ public class UAVGroupController : MonoBehaviour
             }
         }
     }
+
 }
