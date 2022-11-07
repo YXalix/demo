@@ -19,9 +19,15 @@ public class UAVGroupController : MonoBehaviour
     public GameObject UAVPerfab;
 
     private Transform[] spawns;
-    private float angleSpeed = 0.005f;
-    private float speed = 0.5f;
-    private float updownspeed = 0.5f;
+
+    //角速度大小
+    private float angleSpeed = 0.02f;
+
+    //飞行速度大小
+    private float speed = 1f;
+
+    //上下速度大小
+    private float updownspeed = 1f;
 
     private float angle;
 
@@ -90,7 +96,7 @@ public class UAVGroupController : MonoBehaviour
         var step = target * Time.deltaTime;
         print(step);
         // check end node condition
-        if(step.magnitude < 0.001f){
+        if(step.magnitude < 0.01f){
             readyup = false;
             readyrotate = true;
         }
@@ -122,7 +128,7 @@ public class UAVGroupController : MonoBehaviour
         var dis = Vector3.Lerp(transform.position,target,Time.deltaTime)-transform.position;
         transform.position = Vector3.MoveTowards(transform.position,transform.position+dis,speed);
         print(dis.magnitude);
-        if(dis.magnitude < 0.001f){
+        if(dis.magnitude < 0.01f){
             readyfly = false;
             readyrotateequal = true;
         }
