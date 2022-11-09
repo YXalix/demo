@@ -16,14 +16,17 @@ public class UAVGroupController : MonoBehaviour
     public Transform targetTransform;
     public GameObject[] UAVPerfab = new GameObject[4];
 
+    public LineRenderer line;
+
+
     //角速度大小
-    private float angleSpeed = 0.02f;
+    private float angleSpeed = 3f;
 
     //飞行速度大小
-    private float speed = 1f;
+    private float speed = 30f;
 
     //上下速度大小
-    private float updownspeed = 1f;
+    private float updownspeed = 10f;
 
     public bool readyup = false;
 
@@ -63,9 +66,13 @@ public class UAVGroupController : MonoBehaviour
         }
         if(readyrotate){
             myrotateTo(transform);
+            line.SetPosition(0,transform.position);
+            line.SetPosition(1,targetPosition);
         }
         if(readyfly){
             myflyto();
+            line.SetPosition(0,transform.position);
+            line.SetPosition(1,targetPosition);
         }
         if(readyrotateequal){
             myrotateequal();
@@ -83,7 +90,7 @@ public class UAVGroupController : MonoBehaviour
         target.y = height - transform.position.y;
         var step = target * Time.deltaTime;
         // check end node condition
-        if(step.magnitude < 0.01f){
+        if(step.magnitude < 0.1f){
             readyup = false;
             readyrotate = true;
         }
@@ -104,6 +111,8 @@ public class UAVGroupController : MonoBehaviour
         item.localRotation = Quaternion.Slerp(item.localRotation, rotate, angleSpeed);
         if (Vector3.Angle(vec, item.forward) < 1f) // need to been checked
         {
+            line.SetPosition(0,transform.position);
+            line.SetPosition(1,targetPosition);
             readyrotate = false;
             readyfly = true;
         }
