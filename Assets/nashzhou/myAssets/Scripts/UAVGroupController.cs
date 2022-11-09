@@ -7,18 +7,14 @@ public class UAVGroupController : MonoBehaviour
 {
 
     public int groupID;
-
+    public int groupNum;
+    public int groupTarget;
     public float height;
     public UnityEvent m_MyEvent;
     public UnityEvent m_MyEvent2;
     public Vector3 targetPosition;
     public Transform targetTransform;
-
-    public int InitUAVNum;
-
-    public GameObject UAVPerfab;
-
-    private Transform[] spawns;
+    public GameObject[] UAVPerfab = new GameObject[4];
 
     //角速度大小
     private float angleSpeed = 0.02f;
@@ -28,8 +24,6 @@ public class UAVGroupController : MonoBehaviour
 
     //上下速度大小
     private float updownspeed = 1f;
-
-    private float angle;
 
     public bool readyup = false;
 
@@ -41,7 +35,7 @@ public class UAVGroupController : MonoBehaviour
 
     public bool readyrotateequal = false;
 
-    Animator m_Animator;
+    public float currentSpeed = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -50,21 +44,12 @@ public class UAVGroupController : MonoBehaviour
             m_MyEvent = new UnityEvent();
         if (m_MyEvent2 == null)
             m_MyEvent2 = new UnityEvent();
-        targetTransform = GameObject.Find("UAVStarget"+groupID).transform;
-        targetPosition  = targetTransform.position;
-        var temp = transform.GetComponentInChildren<Transform>();
-        var temp1 = temp.GetComponentInChildren<Transform>();
-        
-        //Set the angular velocity of the Rigidbody (rotating around the Y axis, 100 deg/sec)
+        var publishobject = GameObject.Find("InputHandler");
+        var publish = publishobject.GetComponent<InputManage>().submit_Event;
+        publish.AddListener(generator4case);
     }
 
     void Update(){
-        if(Input.GetKeyDown(KeyCode.G)){
-            generator();
-        }
-        if(Input.GetKeyDown(KeyCode.P)){
-            readyup = true;
-        }
         if (Input.GetKeyDown(KeyCode.F) && m_MyEvent != null)
         {
             m_MyEvent.Invoke();
@@ -91,17 +76,19 @@ public class UAVGroupController : MonoBehaviour
     }
 
     public void myflyup(){
+        currentSpeed = currentSpeed + Time.deltaTime*0.4f;
+        print(currentSpeed);
+        currentSpeed = Mathf.Min(currentSpeed,speed);
         var target = Vector3.zero ;
         target.y = height - transform.position.y;
         var step = target * Time.deltaTime;
-        print(step);
         // check end node condition
         if(step.magnitude < 0.01f){
             readyup = false;
             readyrotate = true;
         }
         //transform.position =  (transform.position + step);
-        transform.position = Vector3.MoveTowards(transform.position,transform.position+step,speed);
+        transform.position = Vector3.MoveTowards(transform.position,transform.position+step,currentSpeed);
     }
 
     public void myrotateToall(){
@@ -115,7 +102,6 @@ public class UAVGroupController : MonoBehaviour
         Quaternion rotate = Quaternion.LookRotation(vec);
 
         item.localRotation = Quaternion.Slerp(item.localRotation, rotate, angleSpeed);
-        print(Vector3.Angle(vec, item.forward));
         if (Vector3.Angle(vec, item.forward) < 1f) // need to been checked
         {
             readyrotate = false;
@@ -127,7 +113,6 @@ public class UAVGroupController : MonoBehaviour
         target.y = transform.position.y;
         var dis = Vector3.Lerp(transform.position,target,Time.deltaTime)-transform.position;
         transform.position = Vector3.MoveTowards(transform.position,transform.position+dis,speed);
-        print(dis.magnitude);
         if(dis.magnitude < 0.01f){
             readyfly = false;
             readyrotateequal = true;
@@ -156,22 +141,58 @@ public class UAVGroupController : MonoBehaviour
     }
 
 
-    public void generator(){
-        InitUAVNum = 64;
-        //spawns = new Transform[InitUAVNum];
+    public void generator(Vector3Int groupsNum,Vector3Int groupsTarget){
+        // Init this group data
+        groupNum = groupsNum[groupID];
+        groupTarget = groupsTarget[groupID];
+        targetTransform = GameObject.Find("UAVStarget"+groupTarget).transform;
+        targetPosition  = targetTransform.position;
+
         var count = 0;
-        int sum = (int)Mathf.Sqrt(InitUAVNum);
+        int sum = (int)Mathf.Sqrt(groupNum);
         for(int i = 0;i<=sum;i++){
             for(int j = 0;j<=sum;j++){
-                if(count < InitUAVNum){
+                if(count < groupNum){
                     var templocation = transform.position;
                     templocation.x += (i-sum/2)*5;
                     templocation.z += (j-sum/2)*5;
-                    Instantiate(UAVPerfab,templocation,Quaternion.Euler(0,0,0),transform);
+                    Instantiate(UAVPerfab[0],templocation,Quaternion.Euler(0,0,0),transform);
                     count++;
                 }
             }
         }
+        readyup = true;
     }
 
+    public void generator4case(Vector3Int groupsNum,Vector3Int groupsTarget){
+        // Init this group data
+        groupNum = groupsNum[groupID];
+        groupTarget = groupsTarget[groupID];
+        targetTransform = GameObject.Find("UAVStarget"+groupTarget).transform;
+        targetPosition  = targetTransform.position;
+
+        var count = 0;
+        int sumi = (int)Mathf.Sqrt(groupNum);
+        int sumj = groupNum / sumi + 1;
+        if(groupNum < 16){
+            sumi = 1;
+            sumj = groupNum / 2 + 1;
+        }
+        if(groupNum < 8){
+            sumi = 0;
+            sumj = groupNum;
+        }
+        for(int i = 0;i<=sumi;i++){
+            for(int j = 0;j<=sumj;j++){
+                if(count < groupNum){
+                    var templocation = transform.position;
+                    templocation.x += (i-sumi/2)*5;
+                    templocation.z += (j-sumj/2)*5;
+                    Instantiate(UAVPerfab[i%4],templocation,Quaternion.Euler(0,0,0),transform);
+                    count++;
+                }
+            }
+        }
+        readyup = true;
+    }
 }
