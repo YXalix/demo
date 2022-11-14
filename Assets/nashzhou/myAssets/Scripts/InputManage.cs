@@ -26,6 +26,7 @@ public class InputManage : MonoBehaviour
         if (submit_Event == null)
             submit_Event = new MyVecEvent();
         GUI = GameObject.Find("Canvas");
+        // Debug.Log(GUI.name);
         GUI.SetActive(false);
     }
 
