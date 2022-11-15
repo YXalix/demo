@@ -52,7 +52,7 @@ public class UAVGroupController : MonoBehaviour
         publish.AddListener(generator4case);
     }
 
-    void Update(){
+    void FixedUpdate(){
         if (Input.GetKeyDown(KeyCode.F) && m_MyEvent != null)
         {
             m_MyEvent.Invoke();
